@@ -9,7 +9,6 @@ start(_Type, _Args) ->
 	mnesia:create_schema([node()]),
 	mnesia:start(),
 	mnesia:create_table(cache_data, [{attributes, record_info(fields, cache_data)}]),
-	io:format("~w~n",[mnesia:info()]),
 
 	Dispatch = cowboy_router:compile(
 		[

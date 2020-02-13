@@ -12,7 +12,6 @@
 -include_lib("eunit/include/eunit.hrl").
 
 start_test()->
-%%  gen_server:start()
   my_cache:start_link().
 
 insert_test()->

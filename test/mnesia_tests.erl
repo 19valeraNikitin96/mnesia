@@ -36,5 +36,21 @@ delete_test()->
   Res = mnesia:transaction(F),
   ?assertEqual({'atomic','ok'},Res).
 
+%%TABLE EVENTS
+
+first_event_test()->
+  [Node|[]] = mnesia_lib:all_nodes(),
+  {'ok', Node} = mnesia:subscribe({'table', cache_data, 'detailed'}),
+  Row = #cache_data{key = "MnesiaTestKey",value = "MnesiaTestValue",end_time = erlang:system_time('second')+3600},
+  F = fun()->mnesia:write(Row) end,
+  mnesia:transaction(F),
+  F2 = fun()->mnesia:delete({cache_data, "MnesiaTestKey"}) end,
+  mnesia:transaction(F2),
+  mnesia:report_event({'table', cache_data, 'detailed'}),
+  mnesia_subscr:subscribers(),
+  {messages, EventsList} = erlang:process_info(self(), messages),
+  mnesia:unsubscribe({'table', cache_data, 'detailed'}),
+  ?assertEqual(2, length(EventsList)).
+
 end_scheme_test()->
   mnesia:stop().
