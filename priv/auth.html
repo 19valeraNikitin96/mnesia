@@ -1,15 +1,15 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-    <title>Websocket client</title>
-    <script src="/static/jquery.min.js"></script>
+    <title>Authentication</title>
+    <script src="/static/jquery_auth.min.js"></script>
     <script type="text/javascript">
 
       var websocket;
       $(document).ready(init);
 
       function init() {
-          $('#server').val("ws://" + window.location.host + "/websocket?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiQURNSU4iLCJhZ2UiOiJBRE1JTiJ9.rqnTzvsagMaxGQmmnahOfM8KmnM416KDFNKNv4zcEOM");
+          $('#server').val("ws://" + window.location.host + "/websocket_auth");
           if(!("WebSocket" in window)){
               $('#status').append('<p><span style="color: red;">websockets are not supported </span></p>');
               $("#navigation").hide();
@@ -85,7 +85,7 @@
 
 <body>
 <div id="header">
-    <h1>Websocket client</h1>
+    <h1>Authentication</h1>
     <div id="status"></div>
 </div>
 

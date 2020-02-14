@@ -13,10 +13,12 @@ start(_Type, _Args) ->
 	Dispatch = cowboy_router:compile(
 		[
 			{'_', [
-				{"/api/cache_server", my_cache_server, []},
-				{"/", cowboy_static, {priv_file, mnesia_cache, "index.html"}},
-				{"/websocket", my_cache_websocket_server, []},
-				{"/static/[...]", cowboy_static, {priv_dir, mnesia_cache, "static"}}
+				{"/api/cache_server",my_cache_server,[]},
+				{"/",cowboy_static,{priv_file, mnesia_cache,"index.html"}},
+				{"/websocket?token",my_cache_websocket_server,[]},
+				{"/auth",cowboy_static,{priv_file, mnesia_cache,"auth.html"}},
+				{"/websocket_auth",my_cache_websocket_auth_server,[]},
+				{"/static/[...]",cowboy_static,{priv_dir,mnesia_cache,"static"}}
 			]
 			}
 		]

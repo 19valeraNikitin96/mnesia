@@ -4,9 +4,10 @@
 %%% @doc
 %%%
 %%% @end
-%%% Created : 13. Feb 2020 17:31
+%%% Created : 14. Feb 2020 16:36
 %%%-------------------------------------------------------------------
--module(my_cache_websocket_server).
+-module(my_cache_websocket_auth_server).
+
 -author("erlang").
 
 -export([init/2]).
@@ -18,24 +19,24 @@ init(Req, Opts) ->
   {cowboy_websocket, Req, Opts,#{idle_timeout=>30000}}.
 
 websocket_init(State) ->
-  io:format("~w~w~n", [websocket_pid,self()]),
-  mnesia_observer:subscribe(self()),
-  mnesia:subscribe({'table', cache_data, 'detailed'}),
   erlang:start_timer(1000, self(), <<"Hello!">>),
   {[], State}.
 
 websocket_handle({text, Msg}, State) ->
-  case Msg  of
-%%    <<"flush">> -> io:format("~w~n",[erlang:process_info(self(), messages)]),{[{text, << "That's what she said! ",Msg/binary >>}], State};
-    _ -> {[{text, << "That's what she said! ",Msg/binary >>}], State}
+  Map = jsx:decode(Msg, [return_maps]),
+  {_,Login} = maps:find(<<"login">>,Map),
+  {_,Password} = maps:find(<<"password">>,Map),
+  case Login =:= <<"ADMIN">> andalso Password =:= <<"ADMIN">> of
+    true ->
+      {ok,Jwt} = jwt:encode(hs256,[{name, <<"ADMIN">>},{age, <<"ADMIN">>}],<<"secret">>),
+      io:format("~w~w~n",[encoded_jwt,Jwt]),
+      io:format("~w~w~n",[decoded_jwt,jwt:decode(Jwt,<<"secret">>)]),
+      {[{text,Jwt}], State};
+    false -> {[{text, << "That's what she said! ",Msg/binary >>}], State}
   end;
 websocket_handle(_Data, State) ->
   {[], State}.
-websocket_info({timeout, _Ref,{mnesia_event,Msg}},State) ->
-  io:format("~w~w~n",[mnesia_event,Msg]),
-  {[{text, Msg}],State};
 websocket_info({timeout,_Ref,Msg},State) ->
-  io:format("~w~n",[Msg]),
   {[{text, Msg}],State};
 websocket_info(_Info, State) ->
   {[], State}.

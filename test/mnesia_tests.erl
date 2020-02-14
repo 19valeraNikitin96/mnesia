@@ -27,7 +27,7 @@ insert_test()->
   ?assertEqual({'atomic', ok}, Res).
 
 read_test()->
-  F = fun()->mnesia:read(cache_data, "MnesiaTestKey") end,
+  F = fun() -> mnesia:read(cache_data, "MnesiaTestKey") end,
   {'atomic',[{cache_data,"MnesiaTestKey",Value,_EndTime}]} = mnesia:transaction(F),
   ?assertEqual("MnesiaTestValue", Value).
 
