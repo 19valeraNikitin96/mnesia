@@ -9,24 +9,38 @@
 -module(my_cache_websocket_server).
 -author("erlang").
 
--export([init/2, is_authorized/1]).
+-export([init/2]).
 -export([websocket_init/1]).
 -export([websocket_handle/2]).
 -export([websocket_info/2]).
 
 init(Req, Opts) ->
 %%  io:format("~w~w~n", [initSoc,Req]),
-  is_authorized(Req),
   {cowboy_websocket, Req, Opts,#{idle_timeout=>30000}}.
 
-is_authorized(Req0)->
-  QsVals = cowboy_req:parse_qs(Req0),
-  {_, Token} = lists:keyfind(<<"token">>, 1, QsVals),
-  {Status, _Decoded } = jwt:decode(Token, <<"secret">>),
-  case Status == ok of
-    true -> cowboy_req:reply(400, Req0), ok;
-    false -> ok
-  end.
+%%is_authorized(Req0)->
+%%  Token = cowboy_req:header(<<"Authorization">>, Req0),
+%%  case Token of
+%%    undefined -> failed;
+%%    _ -> {Status, _Decoded } = jwt:decode(Token, <<"secret">>),
+%%      case Status == ok of
+%%        true ->  ok;
+%%        false -> cowboy_req:reply(400, Req0), failed
+%%      end
+%%  end.
+
+%%is_authorized(Req0)->
+%%  Headers = cowboy_req:headers(Req0),
+%%  QsVals = cowboy_req:parse_qs(Req0),
+%%  case lists:keyfind(<<"token">>, 1, QsVals) of
+%%    false -> failed;
+%%    {_, Token} -> {Status, _Decoded } = jwt:decode(Token, <<"secret">>),
+%%      case Status == ok of
+%%        true ->  ok;
+%%        false -> cowboy_req:reply(400, Req0), failed
+%%      end
+%%  end.
+
 
 
 %%is_authorized(Req,State) ->
